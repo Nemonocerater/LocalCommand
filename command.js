@@ -10,7 +10,23 @@ var rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 });
-poll();
+
+(function main() {
+	if (process.argv[2])
+	{
+		changeDirectory("cd " + process.argv[2]);
+	}
+
+	if (process.argv[3])
+	{
+		execute(process.argv[3]);
+	}
+	else
+	{
+		poll();
+	}
+})();
+
 
 function poll ()
 {
@@ -21,13 +37,28 @@ function poll ()
 
 function execute (cmd)
 {
-	if (cmd == 'quit')
+	if (cmd == 'q')
 	{
 		rl.close();
+	}
+	else if (cmd == "root")
+	{
+		console.log("Root Directory: " + rootDirectory);
+		poll();
 	}
 	else if (cmd.slice(0,2) === "cd")
 	{
 		changeDirectory(cmd);
+		poll();
+	}
+	else if (cmd.slice(0,5) === "start")
+	{
+		console.log("Start is blocked until further notice!");
+		poll();
+	}
+	else if (cmd.slice(0,4) === "node")
+	{
+		console.log("Node is blocked until further notice!");
 		poll();
 	}
 	else
@@ -37,16 +68,13 @@ function execute (cmd)
 			{
 				console.log(error.toString().red);
 			}
-			else
+			if (stdout !== null && stdout !== "")
 			{
-				if (stdout !== null && stdout !== "")
-				{
-					console.log(stdout);
-				}
-				if (stderr !== null && stderr !== "")
-				{
-					console.log(stderr.red);
-				}
+				console.log(stdout);
+			}
+			if (stderr !== null && stderr !== "")
+			{
+				console.log(stderr.red);
 			}
 			poll();
 		});
